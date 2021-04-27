@@ -1,7 +1,16 @@
 public class AccountFactory {
+
     private static int uniqueId = 0;
 
-    public Account createAccount(String name){
-        return new Account(name, uniqueId++);
+    public static void incrementUniqueId(int inc) {
+        AccountFactory.uniqueId += inc;
+    }
+
+    public Account createAccount(String name, int customerId){
+        return new Account(name, customerId, uniqueId++);
+    }
+
+    public SavingsAccount createSavingsAccount(String name, int clientId){
+        return new SavingsAccount(name, clientId, uniqueId++);
     }
 }

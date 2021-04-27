@@ -1,41 +1,30 @@
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Client {
-    private int clientId;
+    private final int clientId;
     private String firstName;
     private String lastName;
     private String CNP;
     private String email;
-
-    public List<SavingsAccount> getSavingsAccounts() {
-        return savingsAccounts;
-    }
-
-    public List<CheckingsAccount> getCheckingAccounts() {
-        return checkingAccounts;
-    }
-
     private String phone;
     private Adress adress;
 
-    private final List<Account> accounts = new ArrayList<>();
-    private final Map<String, Account> accountsMap = new HashMap<>();
-    private final List<SavingsAccount> savingsAccounts = new ArrayList<>();
-    private final List<CheckingsAccount> checkingAccounts = new ArrayList<>();
-    private final AccountFactory accountFactory = new AccountFactory();
-    private final SavingsAccountFactory savingsAccountFactory = new SavingsAccountFactory();
-    private final CheckingsAccountFactory checkingsAccountFactory = new CheckingsAccountFactory();
-
-    public Client(int clientIdId, String firstName, String lastName, String CNP, String email, String phone, Adress adress)
+    public Client(int clientId, String firstName, String lastName, String CNP, String email, String phone, Adress adress)
     {
-        this.clientId = clientIdId;
+        this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.CNP = CNP;
         this.email = email;
         this.phone = phone;
         this.adress = adress;
+    }
+
+    public Client(int clientId, Scanner in) throws ParseException {
+        this.clientId = clientId;
+        this.Read(in);
     }
 
     public void Read(Scanner in) throws  ParseException{
@@ -53,42 +42,36 @@ public class Client {
         this.adress =  new Adress(in);
     }
 
-    public void createCustomerAccount(String name){
-        Account newAccount = this.accountFactory.createAccount(name);
-        this.accounts.add(newAccount);
-        this.accountsMap.put(newAccount.getIBAN(), newAccount);
+    public List<Account> filterAccounts(List<Account> allAccounts){
+        var accounts = new ArrayList<Account>();
+        for(var account: allAccounts)
+            if(account.getClientId() == this.getClientId())
+                accounts.add(account);
+        return accounts;
     }
 
-    public void createSavingsAccount(String name)
-    {
-        SavingsAccount newSavingsAccount = this.savingsAccountFactory.createSavingsAccount(name);
-        this.savingsAccounts.add(newSavingsAccount);
+    public List<SavingsAccount> filterSavingAccounts(List<SavingsAccount> allAccounts){
+        var accounts = new ArrayList<SavingsAccount>();
+        for(var account: allAccounts)
+            if(account.getClientId() == this.getClientId())
+                accounts.add(account);
+        return accounts;
     }
 
-    public void createCheckingAccount(String name)
-    {
-        CheckingsAccount newCheckingAccount = this.checkingsAccountFactory.createCheckingAccount(name);
-        this.checkingAccounts.add(newCheckingAccount);
+    public List<Transaction> filterTransactions(List<Account> allAccounts, List<Transaction> allTransactions){
+        var transactions = new ArrayList<Transaction>();
+        var accounts = this.filterAccounts(allAccounts);
+        for(var account: accounts)
+            transactions.addAll(account.filterTransactions(allTransactions));
+        return transactions;
     }
 
-    public void closeAccount(String IBAN) throws Exception{
-        if(this.accounts.size()<=1)
-            throw new Exception("Trebuie sa fie macar un cont asociat cu un client!");
-        if(!this.accountsMap.containsKey(IBAN))
-            throw new Exception("IBAN invalid!");
-        Account accountToBeClosed = this.accountsMap.get(IBAN);
-        if(accountToBeClosed.getAmount()!=0)
-            throw new Exception("Suma din cont trebuie sa fie 0!");
-        accounts.remove(accountToBeClosed);
-        accountsMap.remove(IBAN);
-    }
-
-    public double getTotalAmount()
-    {
-        double totalAmount = 0;
-        for(Account account : accounts)
-            totalAmount += account.getAmount();
-        return totalAmount;
+    public List<Transaction> filterTransactions(List<Account> allAccounts, List<Transaction> allTransactions, int year){
+        var transactions = new ArrayList<Transaction>();
+        var accounts = this.filterAccounts(allAccounts);
+        for(var account: accounts)
+            transactions.addAll(account.filterTransactions(allTransactions, year));
+        return transactions;
     }
 
     @Override
@@ -104,44 +87,16 @@ public class Client {
                 '}';
     }
 
-
-    public List<Transaction> getTransactionHistory(){
-        List<Transaction> transactions = new ArrayList<>();
-        for(Account account : this.accounts)
-            transactions.addAll(account.getTransactionHistory());
-        for(Transaction transaction : transactions)
-            System.out.println(transaction.Afisare());
-        return transactions;
+    public String toCSV(){
+        return clientId +
+                "," + firstName +
+                "," + lastName +
+                "," + CNP +
+                "," + email +
+                "," + phone +
+                "," + adress.toCSV();
     }
 
-
-    public List<Transaction> getTransactionHistory(int year)
-    {
-        List<Transaction> transactions = new ArrayList<>();
-        for(Account account :this.accounts)
-            transactions.addAll(account.getTransactionHistory(year));
-        for(Transaction transaction : transactions)
-            System.out.println(transaction.Afisare());
-        return transactions;
-    }
-
-    public Client(int uniqueId, Scanner in) throws ParseException{
-        this.clientId = uniqueId;
-        this.Read(in);
-        this.createCustomerAccount(this.firstName + " " + this.lastName);
-    }
-
-    public List<Account> getAccounts() {
-        return accounts;
-    }
-
-    public Map<String, Account> getAccountsMap() {
-        return accountsMap;
-    }
-
-    public void setUserId(int userId) {
-        this.clientId = userId;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -167,6 +122,9 @@ public class Client {
         this.CNP = CNP;
     }
 
+    public int getClientId() {
+        return clientId;
+    }
 
     public String getEmail() {
         return email;

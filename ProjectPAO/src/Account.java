@@ -4,34 +4,30 @@ import java.util.List;
 
 public class Account implements Comparator<Transaction> {
     protected String IBAN;
+    protected String BIC;
     protected double amount;
     protected String name;
-    protected String BIC;
-    protected List<Transaction> transactionHistory = new ArrayList<>();
+    protected int clientId;
     private final CardFactory cardFactory = new CardFactory();
     protected List<Card> cards = new ArrayList<>();
 
-    public Account(String name, int uniqueId)
-    {
+    public Account(String IBAN, String swift, double amount, String name, int clientId){
+        this.IBAN = IBAN;
+        this.BIC = swift;
+        this.amount = amount;
         this.name = name;
-        this.BIC = this.generateBIC(uniqueId);
+        this.clientId = clientId;
+    }
+
+    public Account(String name, int clientId, int uniqueId) {
         this.IBAN = this.generateIBAN(uniqueId);
+        this.BIC = this.generateBIC(uniqueId);
         this.amount = 0;
+        this.name = name;
+        this.clientId = clientId;
     }
 
-    public Card createCard(String name)
-    {
-        Card newCard = cardFactory.createCard(this.IBAN,name);
-        cards.add(newCard);
-        return newCard;
-    }
 
-    public Transaction createTransaction(Account expeditor, Account reciever, double amount, String shorDescription) throws  Exception{
-        Transaction newTransaction = new Transaction(expeditor,reciever,amount,shorDescription);
-        expeditor.transactionHistory.add(newTransaction);
-        reciever.transactionHistory.add(newTransaction);
-        return newTransaction;
-    }
 
     @Override
     public String toString() {
@@ -43,38 +39,48 @@ public class Account implements Comparator<Transaction> {
                 '}';
     }
 
+    public String toCSV() {
+        return IBAN +
+                "," + BIC +
+                "," + amount +
+                "," + name +
+                "," + clientId;
+    }
+
+    public List<Transaction> filterTransactions(List<Transaction> allTransactions){
+        List<Transaction> transactions = new ArrayList<>();
+        for(var transaction: allTransactions)
+            if(transaction.getFromIBAN().equals(this.IBAN))
+                transactions.add(transaction);
+        return transactions;
+    }
+
+    public List<Transaction> filterTransactions(List<Transaction> allTransactions, int year){
+        List<Transaction> transactions = new ArrayList<>();
+        for(var transaction: allTransactions)
+            if(transaction.getFromIBAN().equals(this.IBAN) && transaction.getCreationDate().getYear()==year)
+                transactions.add(transaction);
+        return transactions;
+    }
+
+    public void addCard(String name){
+        Card newCard = cardFactory.createCard(this.IBAN, name);
+        cards.add(newCard);
+    }
+
     public List<Card> getCards()
     {
         return cards;
     }
-    public List<Transaction> getTransactionHistory()
-    {
-        return transactionHistory;
-    }
 
-    public List<Transaction> getTransactionHistory(int year)
-    {
-        List <Transaction> filteredTransactions = new ArrayList<>();
-        for(var transaction : transactionHistory)
-            if(transaction.getCreationDate().getYear()==year)
-                filteredTransactions.add(transaction);
-        return filteredTransactions;
-    }
+
 
     public int compare(Transaction transaction1, Transaction transaction2)
     {
         return transaction1.getCreationDate().compareTo(transaction2.getCreationDate());
     }
 
-    public List<Transaction> getTransactionHistory(int year,int month)
-    {
-        List<Transaction> filteredTransactions = new ArrayList<>();
-        for(var transaction: transactionHistory)
-            if(transaction.getCreationDate().getYear()==year && transaction.getCreationDate().getMonth()==month)
-                filteredTransactions.add(transaction);
-        filteredTransactions.sort(this);
-        return filteredTransactions;
-    }
+
 
     private String generateBIC(int uniqueId)
     {
@@ -115,5 +121,9 @@ public class Account implements Comparator<Transaction> {
 
     public void setBIC(String BIC) {
         this.BIC = BIC;
+    }
+
+    public int getClientId() {
+        return clientId;
     }
 }

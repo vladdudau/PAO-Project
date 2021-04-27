@@ -1,37 +1,64 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        boolean end = false;
+        boolean sfarsit = false;
         BankOperations bankOperations = new BankOperations();
 
-        while (!end){
-            System.out.println("Buna ziua! Ce operatiune doriti sa efectuati? : ");
+        ClientSingleton.getInstance().loadFromCSV();
+        AccountSingleton.getInstance().loadFromCSV();
+        SavingsAccountSingleton.getInstance().loadFromCSV();
+        TransactionSingleton.getInstance().loadFromCSV();
+        Audit audit = new Audit();
+
+        bankOperations.setClients(ClientSingleton.getInstance().getClients());
+        bankOperations.setAccounts(AccountSingleton.getInstance().getAccounts());
+        bankOperations.setSavingsAccounts(SavingsAccountSingleton.getInstance().getSavingsAccounts());
+        bankOperations.setTransactions(TransactionSingleton.getInstance().getTransactions());
+        bankOperations.linkAccounts();
+
+        List<String> availableCommands = Arrays.asList("creeaza_client", "creeaza_card_client", "informatii_client", "depozit_client", "conturi_client", "depunde_in_cont", "creeaza_tranzactie", "creeaza_cont", "creeaza_cont_economii", "inchide_cont", "istoric_tranzactii", "sfarsit");
+
+        while (!sfarsit){
+            System.out.println("Insert command: (help - see commands)");
             String command = in.nextLine().toLowerCase(Locale.ROOT);
             try{
                 switch (command) {
-                    case "creaza_client" -> bankOperations.createClient(in);
-                    case "creaza_card_client" -> bankOperations.createClientCard(in);
-                    case "afiseaza_client" -> bankOperations.showClient(in);
-                    case "afiseaza_depozit_client" -> bankOperations.showClientAmount(in);
-                    case "afiseaza_conturi_client" -> bankOperations.showClientAccounts(in);
-                    case "afiseaza_conturi_economii" -> bankOperations.showClientSavingsAccounts(in);
-                    case "afiseaza_conturi_checkings" -> bankOperations.showClientCheckingAccounts(in);
-                    case "afiseaza_anumit_cont" -> bankOperations.showClientAccount(in);
-                    case "depune_in_cont" -> bankOperations.loadClientAccount(in);
-                    case "creaza_tranzactie" -> bankOperations.createTransaction(in);
-                    case "creaza_cont_economii" -> bankOperations.createClientSavingsAccount(in);
-                    case "creaza_cont" -> bankOperations.createClientAccount(in);
-                    case "creaza_cont_checkings" -> bankOperations.createClientCheckingAccount(in);
-                    case "inchide_cont" -> bankOperations.closeAccount(in);
-                    case "afiseaza_tranzactii" -> bankOperations.showClientTransactions(in);
-                    case "end" -> end = true;
+                    case "creeaza_client" ->  bankOperations.createClient(in);
+                    case "creeaza_card_client" ->  bankOperations.createClientCard(in);
+                    case "informatii_client" ->  bankOperations.getClient(in);
+                    case "depozit_client" ->  bankOperations.getClientAmount(in);
+                    case "conturi_client" ->  bankOperations.getClientAccounts(in);
+                    case "cont_client" ->  bankOperations.getClientAccount(in);
+                    case "cont_economii" ->  bankOperations.getClientSavingsAccounts(in);
+                    case "depunde_in_cont" ->  bankOperations.loadClientAccount(in);
+                    case "creeaza_tranzactie" ->  bankOperations.createTransaction(in);
+                    case "creeaza_cont" ->  bankOperations.createClientAccount(in);
+                    case "creeaza_cont_economii" ->  bankOperations.createClientSavingsAccount(in);
+                    case "inchide_cont" ->  bankOperations.closeAccount(in);
+                    case "istoric_tranzactii" ->  bankOperations.getClientTransactions(in);
+                    case "ajutor" -> System.out.println(availableCommands.toString());
+                    case "sfarist" -> sfarsit = true;
                 }
+                if(availableCommands.contains(command))
+                    audit.logAction(command);
             }catch (Exception e){
                 System.out.println(e.toString());
             }
         }
+
+        ClientSingleton.getInstance().setClients( bankOperations.getClients());
+        AccountSingleton.getInstance().setAccounts( bankOperations.getAccounts());
+        SavingsAccountSingleton.getInstance().setSavingsAccounts( bankOperations.getSavingsAccounts());
+        TransactionSingleton.getInstance().setTransactions( bankOperations.getTransactions());
+
+        ClientSingleton.getInstance().dumpToCSV();
+        AccountSingleton.getInstance().dumpToCSV();
+        SavingsAccountSingleton.getInstance().dumpToCSV();
+        TransactionSingleton.getInstance().dumpToCSV();
     }
 }

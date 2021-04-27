@@ -30,6 +30,12 @@ public class Adress {
                 '}';
     }
 
+    public String toCSV() {
+        return street +
+                "," + city +
+                "," + country;
+    }
+
 
     public String getStreet() {
         return street;
