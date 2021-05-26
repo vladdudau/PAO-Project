@@ -5,6 +5,13 @@ public class Adress {
     private String city;
     private String country;
 
+    public void Adress(String street, String city, String country)
+    {
+        this.street = street;
+        this.city = city;
+        this.country = country;
+    }
+
     public void Read(Scanner in)
     {
         System.out.println("Strada : ");

@@ -50,25 +50,20 @@ public class SavingsAccountSingleton {
     }
 
     public void loadFromCSV() {
-        try {
-            var columns = SavingsAccountSingleton.getCSVColumns("data/savings_accounts.csv");
-            for(var fields : columns){
-                var newSavingsAccount = new SavingsAccount(
-                        fields[0],
-                        fields[1],
-                        Double.parseDouble(fields[2]),
-                        fields[3],
-                        Integer.parseInt(fields[4]),
-                        new SimpleDateFormat("yyyy-MM-dd").parse(fields[5]),
-                        new SimpleDateFormat("yyyy-MM-dd").parse(fields[6]),
-                        Integer.parseInt(fields[7])
-                );
-                savingsAccounts.add(newSavingsAccount);
-            }
-            AccountFactory.incrementUniqueId(columns.size());
-        }catch (ParseException e){
-            System.out.println("Nu s-a putut incarca niciun cont de economii!");
+        var columns = SavingsAccountSingleton.getCSVColumns("data/savings_accounts.csv");
+        for(var fields : columns){
+            var newSavingsAccount = new SavingsAccount(
+                    fields[0],
+                    fields[1],
+                    Double.parseDouble(fields[2]),
+                    fields[3],
+                    Integer.parseInt(fields[4]),
+                    fields[5],
+                    Integer.parseInt(fields[6])
+            );
+            savingsAccounts.add(newSavingsAccount);
         }
+        AccountFactory.incrementUniqueId(columns.size());
 
     }
 

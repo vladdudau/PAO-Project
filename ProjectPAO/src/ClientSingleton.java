@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,10 @@ public class ClientSingleton {
     final private ClientFactory clientFactory = new ClientFactory();
     private List<Client> clients = new ArrayList<Client>();
 
-    public static ClientSingleton getInstance()
-    {
+    public ClientSingleton() throws SQLException {
+    }
+
+    public static ClientSingleton getInstance() throws SQLException {
         if (instance == null)
             instance = new ClientSingleton();
         return instance;
@@ -57,8 +60,7 @@ public class ClientSingleton {
                         fields[1],
                         fields[2],
                         fields[3],
-                        fields[4],
-                        new Adress(fields[5], fields[6], fields[7])
+                        new Adress(fields[4], fields[5], fields[6])
                 );
                 clients.add(newClient);
             }

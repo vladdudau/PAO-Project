@@ -3,28 +3,23 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class SavingsAccount extends Account{
-    private final Date startDate;
-    private final Date endDate;
+    private final String startDate;
     private final int interest;
 
 
     public SavingsAccount(String name, int clientId,int uniqueId) {
 
         super(name, clientId, uniqueId);
-
-        this.startDate = new Date();
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        this.startDate = formatter.format(date);
         this.interest = 2;
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.YEAR, 1);
-        this.endDate = c.getTime();
     }
 
-    public SavingsAccount(String IBAN, String swift, double amount, String name, int clientId, Date startDate, Date endDate, int interest) {
+    public SavingsAccount(String IBAN, String swift, double amount, String name, int clientId, String startDate, int interest) {
         super(IBAN, swift, amount, name, clientId);
 
         this.startDate = startDate;
-        this.endDate = endDate;
         this.interest = interest;
     }
 
@@ -38,7 +33,6 @@ public class SavingsAccount extends Account{
                 ", BICUL este ='" + BIC + '\'' +
                 ", suma ramasa este =" + amount +
                 ", data de inceput = " + startDate +
-                ", data expirarii = " + endDate + '\'' +
                 ", gradul de interes = " + interest  +
                 '}';
     }
@@ -50,12 +44,11 @@ public class SavingsAccount extends Account{
                 "," + name +
                 "," + clientId +
                 "," + cards +
-                "," + (new SimpleDateFormat("yyyy-MM-dd")).format(startDate) +
-                "," + (new SimpleDateFormat("yyyy-MM-dd")).format(endDate) +
+                "," + startDate +
                 "," + interest;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
@@ -63,7 +56,5 @@ public class SavingsAccount extends Account{
         return interest;
     }
 
-    public Date getEndDate() {
-        return endDate;
-    }
+
 }

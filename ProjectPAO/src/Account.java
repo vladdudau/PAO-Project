@@ -29,6 +29,7 @@ public class Account implements Comparator<Transaction> {
 
 
 
+
     @Override
     public String toString() {
         return "{" +
@@ -50,16 +51,25 @@ public class Account implements Comparator<Transaction> {
     public List<Transaction> filterTransactions(List<Transaction> allTransactions){
         List<Transaction> transactions = new ArrayList<>();
         for(var transaction: allTransactions)
-            if(transaction.getFromIBAN().equals(this.IBAN))
+        {
+//            System.out.println(transaction);
+//            System.out.println(this.IBAN);
+            if(transaction.getFromIBAN().equals(this.IBAN) || transaction.getToIBAN().equals(this.IBAN))
                 transactions.add(transaction);
+        }
+
         return transactions;
     }
 
-    public List<Transaction> filterTransactions(List<Transaction> allTransactions, int year){
+    public List<Transaction> filterTransactions(List<Transaction> allTransactions, int year) {
         List<Transaction> transactions = new ArrayList<>();
-        for(var transaction: allTransactions)
-            if(transaction.getFromIBAN().equals(this.IBAN) && transaction.getCreationDate().getYear()==year)
+        for (var transaction : allTransactions)
+        {
+            int x = transaction.getYear();
+            if((transaction.getFromIBAN().equals(this.IBAN) || transaction.getToIBAN().equals(this.IBAN)) && transaction.getYear()==year)
                 transactions.add(transaction);
+        }
+
         return transactions;
     }
 
@@ -82,13 +92,13 @@ public class Account implements Comparator<Transaction> {
 
 
 
-    private String generateBIC(int uniqueId)
+    protected String generateBIC(int clientId)
     {
-        return "BIC" + "VLD" + uniqueId;
+        return "BIC" + "VLD" + clientId*2;
     }
-    protected String generateIBAN(int uniqueId)
+    protected String generateIBAN(int clientId)
     {
-        return "RO04VLDG" + uniqueId;
+        return "RO04VLDG" + clientId*2;
     }
 
     public String getIBAN() {

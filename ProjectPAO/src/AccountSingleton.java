@@ -38,7 +38,6 @@ public class AccountSingleton {
         try(var in = new BufferedReader(new FileReader(fileName))) {
 
             String line;
-
             while((line = in.readLine()) != null ) {
                 String[] fields = line.replaceAll(" ", "").split(",");
                 columns.add(fields);

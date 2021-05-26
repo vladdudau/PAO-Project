@@ -4,7 +4,7 @@ import java.util.Date;
 public class Transaction {
     final private String fromIBAN, toIBAN;
     private final double amount;
-    final private Date creationDate;
+    final private String creationDate;
     private final String shortDescription;
 
     public Transaction(String fromIBAN, String toIBAN, double amount, String shortDescription) throws Exception {
@@ -16,10 +16,12 @@ public class Transaction {
         this.toIBAN = toIBAN;
         this.amount = amount;
         this.shortDescription = shortDescription;
-        this.creationDate = new Date();
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        this.creationDate = formatter.format(date);
     }
 
-    public Transaction(String fromIBAN, String toIBAN, double amount, String shortDescription, Date creationDate) throws Exception {
+    public Transaction(String fromIBAN, String toIBAN, double amount, String creationDate,String shortDescription) throws Exception {
         this.fromIBAN = fromIBAN;
         this.toIBAN = toIBAN;
         this.amount = amount;
@@ -34,7 +36,7 @@ public class Transaction {
                 ", catre=" + toIBAN +
                 ", suma depusa=" + amount +
                 ", scurta descriere='" + shortDescription + '\'' +
-                ", Data la care a fost procesata=" + (new SimpleDateFormat("yyyy-MM-dd+HH:mm:ss")).format(creationDate) +
+                ", Data la care a fost procesata=" + creationDate +
                 '}';
     }
 
@@ -43,7 +45,7 @@ public class Transaction {
                 "," + toIBAN +
                 "," + amount +
                 "," + shortDescription +
-                "," + (new SimpleDateFormat("yyyy-MM-dd h:m:i")).format(creationDate);
+                "," + creationDate;
     }
 
     public double getAmount() {
@@ -58,10 +60,15 @@ public class Transaction {
         return toIBAN;
     }
 
-    public Date getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
-
+    public int getYear()
+    {
+        String[] sir = creationDate.split("/");
+        int year = Integer.parseInt(sir[2]);
+        return year;
+    }
     public String getShortDescription() {
         return shortDescription;
     }

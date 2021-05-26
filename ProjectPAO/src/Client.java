@@ -7,17 +7,15 @@ public class Client {
     private String firstName;
     private String lastName;
     private String CNP;
-    private String email;
     private String phone;
     private Adress adress;
 
-    public Client(int clientId, String firstName, String lastName, String CNP, String email, String phone, Adress adress)
+    public Client(int clientId, String firstName, String lastName, String CNP, String phone, Adress adress)
     {
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.CNP = CNP;
-        this.email = email;
         this.phone = phone;
         this.adress = adress;
     }
@@ -34,8 +32,6 @@ public class Client {
         this.lastName=in.nextLine();
         System.out.println("CNP: ");
         this.CNP=in.nextLine();
-        System.out.println("Email: ");
-        this.email=in.nextLine();
         System.out.println("Numar de telefon: ");
         this.phone=in.nextLine();
         System.out.println("Adresa: ");
@@ -70,7 +66,9 @@ public class Client {
         var transactions = new ArrayList<Transaction>();
         var accounts = this.filterAccounts(allAccounts);
         for(var account: accounts)
+        {
             transactions.addAll(account.filterTransactions(allTransactions, year));
+        }
         return transactions;
     }
 
@@ -81,7 +79,6 @@ public class Client {
                 ", prenume='" + firstName + '\'' +
                 ", nume='" + lastName + '\'' +
                 ", CNP='" + CNP + '\'' +
-                ", email='" + email + '\'' +
                 ", numar de telefon='" + phone + '\'' +
                 ", adresa =" + adress.toString() +
                 '}';
@@ -92,7 +89,6 @@ public class Client {
                 "," + firstName +
                 "," + lastName +
                 "," + CNP +
-                "," + email +
                 "," + phone +
                 "," + adress.toCSV();
     }
@@ -126,13 +122,7 @@ public class Client {
         return clientId;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getPhone() {
         return phone;
